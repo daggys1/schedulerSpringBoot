@@ -1,5 +1,8 @@
 import ch.qos.logback.classic.AsyncAppender
 import static ch.qos.logback.classic.Level.INFO
+import ch.qos.logback.core.*
+import ch.qos.logback.classic.encoder.*
+import ch.qos.logback.core.rolling.*
 
 def LOG_PATH = "C:/logs"
 def LOG_ARCHIVE = "${LOG_PATH}/webapp"
@@ -25,8 +28,5 @@ appender("RollingFile-Appender", RollingFileAppender) {
         pattern = "%msg%n"
     }
 }
-appender("Async-Appender", AsyncAppender) {
-    appenderRef("RollingFile-Appender")
-}
-logger("com.yoga.services", INFO, ["Console-Appender", "File-Appender", "Async-Appender"], false)
+logger("com.yoga.services", INFO, ["Console-Appender", "File-Appender"], false)
 root(INFO, ["Console-Appender"])
