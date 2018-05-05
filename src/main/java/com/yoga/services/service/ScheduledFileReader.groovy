@@ -15,8 +15,7 @@ class ScheduledFileReader {
     @Scheduled(cron = '*/5 * * * * ?')//runs every 5 secs
     void readFile() throws FileNotFoundException, IllegalArgumentException {
 
-        //location of the file hardcoded can be externalized
-        new File('C:/logs/logfile.log').eachLine {
+        new File(System.getProperty('FILE_NAME')).eachLine {
             l ->
                 println(l)
                 //do something with the line
