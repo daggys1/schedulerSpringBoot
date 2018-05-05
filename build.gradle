@@ -58,5 +58,5 @@ dependencies {
 }
 
 bootRun{
-
+jvmArgs = ["-DFILE_NAME=C:/logs/application.log"]
 }
