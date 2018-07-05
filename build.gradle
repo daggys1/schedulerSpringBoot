@@ -43,6 +43,10 @@ dependencies {
 
     compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '8.5.27'
 
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '1.3.5.RELEASE'
+
+
 
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
     compile group: 'com.google.guava', name: 'guava', version: '24.0-jre'
@@ -54,9 +58,8 @@ dependencies {
     compile group: 'ch.qos.logback', name: 'logback-core', version: '1.0.9'
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4'
-
 }
 
 bootRun{
-jvmArgs = ["-DFILE_NAME=C:/logs/application.log"]
+jvmArgs = ["-DFILE_NAME=C:/logs/application.log", "-DPORT=8081", "-DContext=/news"]
 }
