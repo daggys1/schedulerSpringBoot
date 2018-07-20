@@ -3,12 +3,11 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.10.RELEASE")
-
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE")
     }
 }
-group 'com'
-version '1.0-1'
+group 'us.ne.state'
+version '1.0.0'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
@@ -31,35 +30,45 @@ repositories {
     mavenCentral()
 }
 
-
 dependencies {
+    def springVersion = '2.0.3.RELEASE'
+
+    // Language support
     compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.11', classifier: 'indy'
-    compile group: 'org.artifactory', name: 'artifactory-parent', version: '3.1.0', ext: 'pom'
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-parent', version: '1.3.5.RELEASE') {
+
+    //Core web framework
+    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-parent', version: springVersion) {
         exclude(module: "spring-boot-starter-tomcat")
     }
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '1.3.5.RELEASE')
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: '1.3.5.RELEASE')
-
+    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springVersion)
+    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: springVersion)
     compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '8.5.27'
-
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '1.3.5.RELEASE'
-
-
-
-    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
-    compile group: 'com.google.guava', name: 'guava', version: '24.0-jre'
     compile group: 'javax.servlet.jsp', name: 'javax.servlet.jsp-api', version: '2.3.1'
 
+    // for Metrics.. Let's see.
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: springVersion
 
+    //DB infrastructure
+    compile("org.springframework:spring-jdbc")
+    compile group: 'com.zaxxer', name: 'HikariCP', version: '3.2.0'
+    compile group: 'net.sourceforge.jtds', name: 'jtds', version: '1.3.1'
+
+    //MISC
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    compile group: 'com.google.guava', name: 'guava', version: '24.0-jre'
+
+    //Logging Infrastructure
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.2'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.9'
     compile group: 'ch.qos.logback', name: 'logback-core', version: '1.0.9'
+
+    // JWT core
+    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.0'
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4'
 }
 
-bootRun{
-jvmArgs = ["-DFILE_NAME=C:/logs/application.log", "-DPORT=8081", "-DContext=/news"]
+bootRun {
+    jvmArgs = ["-DFILE_NAME=C:/logs/application.log", "-DPORT=8081", "-DContext=/news"]
 }
