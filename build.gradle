@@ -6,7 +6,7 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE")
     }
 }
-group 'us.ne.state'
+group 'com'
 version '1.0.0'
 
 apply plugin: 'groovy'
