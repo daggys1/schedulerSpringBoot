@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap
 import groovy.sql.Sql
 import org.springframework.jdbc.core.JdbcTemplate
 
+import java.sql.ResultSet
+
 
 class ProbationerDemographicsService {
 
@@ -27,8 +29,14 @@ class ProbationerDemographicsService {
         def map = new HashMap<String, String>(10)
         println(getSorUri())
         try {
-            def query = "SELECT pk_Probationer_Id pbId, last_Name lastName, first_Name firstName, SSN ssn,birth_Date dob FROM NSC_Npacs.dbo.probationer where first_Name = ${firstName}"
-            sql.query(query) { p ->
+            def query = "SELECT * FROM NSC_Npacs.dbo.probationer where last_Name = ${lastName}"
+
+            /**
+             * { ResultSet rs ->
+             *      *     while (rs.next()) println rs.getString('firstname')
+             *      * }
+             */
+            sql.query(query) { ResultSet p ->
                 while (p.next()) {
                     dbKeyToObjectKeyMapping.each { k, v ->
                         map.put(v, p.getString(k))

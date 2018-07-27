@@ -4,8 +4,6 @@ import io.jsonwebtoken.JwtBuilder
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 
-import java.security.SecureRandom
-
 class JwtTokenProviderService {
 
     private String jwtIssuerID
@@ -25,15 +23,12 @@ class JwtTokenProviderService {
         def jwtToken
 
         JwtBuilder token
-
         try {
-            SecureRandom random = new SecureRandom()
-
             token = Jwts.builder()
                     .setIssuer(jwtIssuer)
                     .setId(jwtIssuerID)
                     .signWith(SignatureAlgorithm.HS256, jwtSecret)
-                    .setExpiration(getExpireyTime(ttlMillis))
+                    .setExpiration(getExpiryTime(ttlMillis))
                     .setSubject(user as String)
 
             jwtToken = token.compact()
@@ -43,7 +38,7 @@ class JwtTokenProviderService {
         jwtToken
     }
 
-    def getExpireyTime = { def ttlMillis ->
+    def getExpiryTime = { def ttlMillis ->
         Date exp
         long nowMillis = System.currentTimeMillis()
         if (ttlMillis >= 0) {

@@ -2,46 +2,54 @@ package us.ne.state.services.config
 
 import com.zaxxer.hikari.HikariDataSource
 import groovy.sql.Sql
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.env.StandardEnvironment
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.web.client.RestTemplate
+import us.ne.state.services.Exceptions.DefaultExceptionHandler
 import us.ne.state.services.controller.JwtTokenGeneratorController
 import us.ne.state.services.controller.ProbationerDemographicsController
 import us.ne.state.services.service.JwtTokenProviderService
 import us.ne.state.services.service.ProbationerDemographicsService
+import us.ne.state.services.service.SwapiApiSample
 import us.ne.state.services.service.TokenVerificationService
 
+import javax.inject.Inject
 import javax.sql.DataSource
+
+import static us.ne.state.services.util.SpringConfigurationUtils.intFromEnvironmentOrIllegalArgumentException
+import static us.ne.state.services.util.SpringConfigurationUtils.stringFromEnvironmentOrIllegalArgumentException
 
 @Configuration
 class RemoteConfiguration {
+    @Inject
+    StandardEnvironment env
 
     // TODO properties to be externalized to a remote properties file or create a new module for IAC
     @Bean
     TomcatServletWebServerFactory servletContainer() {
         def factory = new TomcatServletWebServerFactory()
-        factory.setPort(8082)
-        factory.setContextPath("/probationer")
-        println("application started on port 8082 under context /probationer")
+        factory.setPort(intFromEnvironmentOrIllegalArgumentException('probationer.system.services.config.port', env))
+        factory.setContextPath(stringFromEnvironmentOrIllegalArgumentException('probationer.system.services.pross.config.context', env))
+        println("application started on port ${intFromEnvironmentOrIllegalArgumentException('probationer.system.services.config.port', env)} " +
+                "under context ${stringFromEnvironmentOrIllegalArgumentException('probationer.system.services.pross.config.context', env)}")
         factory
     }
 
-    @Bean
-    ProbationerDemographicsController probationerDemographicsController() {
-        new ProbationerDemographicsController(probationerDemographics(),tokenVerificationService())
-    }
 
     //TODO externalize to a property file
     @Bean
     DataSource probationerDataSource() {
         def dataSource = new HikariDataSource()
         dataSource.setDriverClassName('net.sourceforge.jtds.jdbc.Driver')
-        dataSource.setJdbcUrl("jdbc:jtds:sqlserver://192.168.33.10/NSC_Npacs")
-        dataSource.setUsername('npacs')
-        dataSource.setPassword('npacs1shere')
+        dataSource.setJdbcUrl(stringFromEnvironmentOrIllegalArgumentException('sor.probationer.datasource.jdbcurl', env))
+        dataSource.setUsername(stringFromEnvironmentOrIllegalArgumentException('sor.probationer.datasource.username', env))
+        dataSource.setPassword(stringFromEnvironmentOrIllegalArgumentException('sor.probationer.datasource.password', env))
         dataSource.setConnectionTestQuery("SELECT 1")
-        dataSource.setMaximumPoolSize(20)  // Leave small; see Hikari documentation
+        dataSource.setMaximumPoolSize(20)
         dataSource.setMinimumIdle(10)
         dataSource
     }
@@ -67,7 +75,7 @@ class RemoteConfiguration {
         def jwtSecret = 'supersecret'
         def jwtIssuerId = 'somestring'
         def jwtIssuer = 'someone'
-        new JwtTokenProviderService(jwtIssuerId,jwtIssuer,jwtSecret)
+        new JwtTokenProviderService(jwtIssuerId, jwtIssuer, jwtSecret)
     }
 
     @Bean
@@ -76,12 +84,48 @@ class RemoteConfiguration {
     }
 
 
-    //TODO externalize this to props
+    @Bean
+    SwapiApiSample sample() {
+        new SwapiApiSample(restTemplate())
+    }
+
+    @Bean
+    RestTemplate restTemplate() {
+        new RestTemplate()
+    }
+
+    @Bean
+    DefaultExceptionHandler defaultExceptionHandler() {
+        new DefaultExceptionHandler()
+    }
+
+    // TODO look at this configuration style to get the props from file that is not in the classpath:
+    /* @Bean
+     static PropertyPlaceholderConfigurer ppc() throws IOException {
+         PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer()
+         Properties properties = new Properties()
+         properties.setProperty()
+         ppc.setProperties(properties)
+     }*/
+
+    /* @Bean
+     JwtFilter jwtFilter() {
+         new JwtFilter(stringFromEnvironmentOrIllegalArgumentException('jwtSecret',env),
+                 stringFromEnvironmentOrIllegalArgumentException('jwtIssuer',env),
+                 stringFromEnvironmentOrIllegalArgumentException('jwtIssuerId',env))
+     }*/
+
     @Bean
     TokenVerificationService tokenVerificationService() {
-        def jwtSecret = 'supersecret'
-        def jwtIssuer = 'someone'
-        def jwtIssuerId = 'somestring'
-        new TokenVerificationService(jwtSecret,jwtIssuer,jwtIssuerId)
+        new TokenVerificationService(stringFromEnvironmentOrIllegalArgumentException('jwtSecret',env),
+                stringFromEnvironmentOrIllegalArgumentException('jwtIssuer',env),
+                stringFromEnvironmentOrIllegalArgumentException('jwtIssuerId',env))
+    }
+
+
+
+    @Bean
+    ProbationerDemographicsController probationerDemographicsController() {
+        new ProbationerDemographicsController(probationerDemographics(),tokenVerificationService())
     }
 }

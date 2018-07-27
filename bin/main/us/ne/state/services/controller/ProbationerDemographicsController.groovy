@@ -20,7 +20,7 @@ class ProbationerDemographicsController {
 
     ProbationerDemographicsController(ProbationerDemographicsService service,
                                       TokenVerificationService tokenVerificationService) {
-        if(null == service || null == tokenVerificationService)
+        if (null == service || null == tokenVerificationService)
             throw new IllegalArgumentException("cannot instantiate ${getClass()} with out providing required ${TokenVerificationService} and ${ProbationerDemographicsService}.")
         this.service = service
         this.tokenVerificationService = tokenVerificationService
@@ -31,8 +31,23 @@ class ProbationerDemographicsController {
                                             @RequestParam(value = "lastName", required = false) String lastName,
                                             @RequestParam(value = "ssn", required = false) String ssn, HttpServletRequest request) {
 
+        //tokenVerificationService.verifyJwtOrUnauthorizedUserException(request.getHeader('token'), request.getHeader('user'))
+        def fn = 'firstName'
+        def ln = 'lastName'
+        def ssn1 = 'ssn'
+        def list = new ArrayList(3)
 
-        tokenVerificationService.verifyJwtOrUnauthorizedUserException(request.getHeader('token'), request.getHeader('user'))
+        if (!firstname) {
+            list.add(fn)
+        } else if (!lastName) {
+            list.add(ln)
+        } else if (!ssn) {
+            list.add(ssn1)
+        }
+
+        list.each { obj ->
+            println(obj)
+        }
         def res
         try {
             res = service.demographics(firstname, lastName, ssn)
