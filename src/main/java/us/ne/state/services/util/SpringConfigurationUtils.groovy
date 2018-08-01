@@ -34,4 +34,19 @@ class SpringConfigurationUtils {
 
         value
     }
+
+    static Integer intFromEnvironmentOrNull(String key, StandardEnvironment environment){
+        def value = null
+        try {
+            if (environment.getProperty(key) == null) {
+            return value
+            } else {
+                value = Integer.parseInt(environment.getProperty(key))
+            }
+        } catch (final Exception e) {
+            throw new IllegalArgumentException("${e.message}")
+        }
+
+        value as int
+    }
 }

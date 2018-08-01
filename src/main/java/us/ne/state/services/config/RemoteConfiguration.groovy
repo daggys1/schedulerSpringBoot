@@ -6,6 +6,7 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 import org.springframework.core.env.StandardEnvironment
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.web.client.RestTemplate
@@ -24,20 +25,13 @@ import static us.ne.state.services.util.SpringConfigurationUtils.intFromEnvironm
 import static us.ne.state.services.util.SpringConfigurationUtils.stringFromEnvironmentOrIllegalArgumentException
 
 @Configuration
+@Import(TomcatConfiguration)
 class RemoteConfiguration {
     @Inject
     StandardEnvironment env
 
     // TODO properties to be externalized to a remote properties file or create a new module for IAC
-    @Bean
-    TomcatServletWebServerFactory servletContainer() {
-        def factory = new TomcatServletWebServerFactory()
-        factory.setPort(intFromEnvironmentOrIllegalArgumentException('probationer.system.services.config.port', env))
-        factory.setContextPath(stringFromEnvironmentOrIllegalArgumentException('probationer.system.services.pross.config.context', env))
-        println("application started on port ${intFromEnvironmentOrIllegalArgumentException('probationer.system.services.config.port', env)} " +
-                "under context ${stringFromEnvironmentOrIllegalArgumentException('probationer.system.services.pross.config.context', env)}")
-        factory
-    }
+
 
 
     //TODO externalize to a property file
