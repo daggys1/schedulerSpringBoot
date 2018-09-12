@@ -17,6 +17,7 @@ class Automation {
         if(response.statusCode() == 200){
             println('Aop reports is live')
         } else {
+            println(response.getBody().asString())
             throw new Exception("Aop reports id dead!!")
         }
     }
@@ -31,6 +32,7 @@ class Automation {
         if(response.statusCode() == 200){
             println('Aop reports is live')
         } else {
+            println(response.getBody().asString())
             throw new Exception("Aop reports id dead!!")
         }
     }
