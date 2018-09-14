@@ -16,6 +16,7 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'jacoco'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -80,6 +81,22 @@ dependencies {
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 
 }
+
+test {
+    reports {
+        junitXml.enabled = false
+        html.enabled = true
+    }
+    testLogging {
+        events "FAILED",'PASSED'
+        debug {
+            events "started", "skipped", "failed", "passed"
+            exceptionFormat "full"
+        }
+        info.events = ["passed","failed", "skipped"]
+    }
+}
+
 
 bootRun {
     jvmArgs = ["-DFILE_NAME=C:/logs/application.log", "-DPORT=8081", "-DContext=/news"]
