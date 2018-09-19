@@ -20,7 +20,7 @@ class SwApiTest {
 
     @BeforeClass
     static void init() {
-        RestAssured.baseURI = 'https://swapi.co/api/people'
+        RestAssured.baseURI = 'https://swapi.co/api'
         config = RestAssured.config()
                 .httpClient(HttpClientConfig.httpClientConfig()
                 .setParam("http.connection.timeout", 1000)
@@ -31,7 +31,7 @@ class SwApiTest {
     void getLuke() throws Exception {
         try {
             given().config(config)
-                    .get('/1').then()
+                    .get('/people/1').then()
                     .log()
                     .all()
                     .statusCode(200)
@@ -78,7 +78,7 @@ class SwApiTest {
     @Test
     void verifyLuke() {
         //behavior-driven development (BDD)
-        Response response = given().get('/1')
+        Response response = given().get('/people/1')
         Assert.assertEquals(200, response.statusCode())
         println response.asString()
 
@@ -104,7 +104,7 @@ class SwApiTest {
 
     @Test
     void testJsonOfLuke() throws Exception {
-        given().get('/1')
+        given().get('/people/1')
         .then()
         .body(matchesJsonSchemaInClasspath('luke.json')).log().all(true)
         .body("name",equalTo('Luke Skywalker'))
@@ -112,6 +112,38 @@ class SwApiTest {
 
     @Test
     void oneANotFound(){
-        given().get('/1a').then().log().all().statusCode(404).body("detail",equalTo('Not found')).contentType(ContentType.JSON)
+        given().get('/people/1a').then().log().all().statusCode(404).body("detail",equalTo('Not found')).contentType(ContentType.JSON)
+    }
+
+    /**
+     * {
+     *     "people": "https://swapi.co/api/people/",
+     *     "planets": "https://swapi.co/api/planets/",
+     *     "films": "https://swapi.co/api/films/",
+     *     "species": "https://swapi.co/api/species/",
+     *     "vehicles": "https://swapi.co/api/vehicles/",
+     *     "starships": "https://swapi.co/api/starships/"
+     * }
+     */
+
+    @Test
+    void testSwapiApi(){
+        given().get().then().statusCode(200).
+                contentType(ContentType.JSON)
+                .body(matchesJsonSchemaInClasspath('api.json'))
+    }
+
+
+    @Test
+    void swapiApi(){
+        Response response = given().get()
+        JsonPath jsonPath = new JsonPath(response.asString())
+        println response.body().asString()
+        Assert.assertEquals('https://swapi.co/api/people/',jsonPath.get('people'))
+        Assert.assertEquals('https://swapi.co/api/planets/',jsonPath.get('planets'))
+        Assert.assertEquals('https://swapi.co/api/films/',jsonPath.get('films'))
+        Assert.assertEquals('https://swapi.co/api/species/',jsonPath.get('species'))
+        Assert.assertEquals('https://swapi.co/api/vehicles/',jsonPath.get('vehicles'))
+        Assert.assertEquals('https://swapi.co/api/starships/',jsonPath.get('starships'))
     }
 }
