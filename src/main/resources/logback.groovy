@@ -25,20 +25,10 @@ appender("RollingFile-Appender", RollingFileAppender) {
         pattern = "%d{yyyy-MM-dd HH:mm:ss} - %-5level - %logger{35} - %msg%n"
     }
 }
-//Spring logs
-appender('SPRING',RollingFileAppender){
-    file = "${LOG_PATH}/spring.log"
-    encoder(PatternLayoutEncoder) {
-        pattern = "%d{yyyy-MM-dd HH:mm:ss} - %-5level - %logger{35} - %msg%n"
-        outputPatternAsHeader = true
-    }
-}
-logger("us.ne.state", INFO, ["File-Appender"], false)
-logger('org.springframework',DEBUG,["File-Appender","Console-Appender"],false)
+logger("us.test ", INFO, ["File-Appender"], false)
 //helpful for development and testing ;)
 if(System.getProperty('LogToConsole')){
     root(DEBUG, ['Console-Appender'])
 }
-root(INFO, ['File-Appender'])
-root(ERROR,['SPRING'])
+root(INFO, ['File-Appender','Console-Appender'])
 
